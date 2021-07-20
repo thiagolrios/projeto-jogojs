@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <title>Elemental Tournament</title>
+        <meta charset="UTF-8">
+        <script src="skills/jquery-3.3.1.min.js"></script>
+        <script>
+
+            var xm 
+            var ym
+
+            function showCoords(event) {
+                xm = event.clientX;
+                ym = event.clientY;
+            }
+            
+            $("#link").prop('disabled',true);
+
+             $(document).ready(function(){
+                    $('body').click(function controlesJq(evento){
+                        if(ym>45&&ym<100&&xm>590&&xm<635)
+                        personagem = 1
+                        if(ym>275&&ym<325&&xm>648&&xm<753&&personagem>0)
+                        document.getElementById('link').click()
+                    })})
+
+        </script>
+    </head>
+    <body>
+
+            <div onclick="showCoords(event)" id="div1"><canvas id="canvas_area" width="812px" height="375px"></canvas></div>
+
+            
+
+            <script>
+    
+                //Variaveis
+            var canvas = document.getElementById("canvas_area")
+            var context = canvas.getContext("2d")
+            var div = document.createElement("div1")
+            div.style.width = "812px"
+            div.style.height = "375px"
+            var personagem = 0    
+
+            menufps = function (fn,fps){
+                    var antes = new Date().getTime()
+                    fps = fps || 60
+                    var intervalo = 1000 / fps
+                    return (function loop(tempo){
+                        requestAnimationFrame(loop)
+                        var agora = new Date().getTime()
+                        var diferenca = agora - antes
+                        if(diferenca > intervalo ){
+                            antes = agora - (diferenca % intervalo)
+                            fn()
+                        }
+                    }(0))
+                } 
+
+            menufps(Desenhar,60)
+            var Background = new Image()
+            Background.src = "imgs/champselect.png"
+            
+            function Desenhar(){
+            context.clearRect(0,0,canvas.width,canvas.height)
+            context.drawImage(Background,0,0)
+            lutador()
+            }
+
+
+
+
+            function lutador()
+            {
+                switch(personagem)
+            {
+                case 1:
+                var personagemspr = new Image()
+                personagemspr.src = "skills/fogo_idle.png"
+                context.drawImage(personagemspr,0,0,750,720,100,150,220,190)
+            }
+            }
+
+</script>
+           
+    <a href="preluta.html" id="link" />
+
+</body>
+</html>

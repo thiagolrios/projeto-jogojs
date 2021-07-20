@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <title>Elemental Tournament</title>
+        <meta charset="UTF-8">
+        <script src="skills/jquery-3.3.1.min.js"></script>
+        <script>
+
+            var xm 
+            var ym
+
+            function showCoords(event) {
+                xm = event.clientX;
+                ym = event.clientY;
+            }
+            
+            $("#link").prop('disabled',true);
+
+             $(document).ready(function(){
+                    $('body').click(function controlesJq(evento){
+                        if(ym>25&&ym<105&&xm>329&&xm<505)
+                        document.getElementById('link').click()
+                    })})
+
+        </script>
+    </head>
+    <body>
+
+            <div onclick="showCoords(event)" id="div1"><canvas id="canvas_area" width="812px" height="375px"></canvas></div>
+
+
+            
+
+            <script>
+    
+                //Variaveis
+            var canvas = document.getElementById("canvas_area")
+            var context = canvas.getContext("2d")
+            
+            menufps = function (fn,fps){
+                    var antes = new Date().getTime()
+                    fps = fps || 60
+                    var intervalo = 1000 / fps
+                    return (function loop(tempo){
+                        requestAnimationFrame(loop)
+                        var agora = new Date().getTime()
+                        var diferenca = agora - antes
+                        if(diferenca > intervalo ){
+                            antes = agora - (diferenca % intervalo)
+                            fn()
+                        }
+                    }(0))
+                } 
+
+            menufps(Desenhar,60)
+            var Background = new Image()
+            Background.src = "imgs/preluta.png"
+
+            var inimigospr =  new Image()
+            inimigospr.src = "skills/raio_idle.png"
+
+            function Desenhar(){
+            context.clearRect(0,0,canvas.width,canvas.height)
+            context.drawImage(Background,0,0)
+            context.drawImage(inimigospr,0,0,750,720,310,180,220,190)
+            }
+
+            var div = document.createElement("div1")
+            div.style.width = "812px"
+            div.style.height = "375px"
+
+            </script>
+        
+        <a href="basepc.html" id="link" />
+
+    </body>
+</html>

@@ -1,0 +1,767 @@
+<html>
+    <head>
+        <title>Elemental Tournament</title>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="Temporizadores Fogo.js"></script>
+        <script type="text/javascript" src="Magias Fogo.js"></script>
+        <script type="text/javascript" src="Inimigo.js"></script>
+        <script type="text/javascript" src="Temporizadores Raio.js"></script>
+        <script type="text/javascript" src="Magias Teste.js"></script>
+        <script src="skills/jquery-3.3.1.min.js"></script>
+        <script>
+        $(document).ready(function(){
+                    $('body').keydown(function controlesJq(evento){
+                    if (evento.keyCode==65){ // esquerda
+                        esquerda = true
+                    }
+                    if(evento.keyCode==68){ // direita
+                        direita = true
+                    }
+                    if(evento.keyCode==87){ // cima
+                        cima = true
+                    }   
+                    if(evento.keyCode==83){ // baixo
+                        baixo = true
+                    }
+
+                    if (evento.keyCode==72&&CD==true&&castanima==true&&heroalive&&enemyalive&&!contusaoP){
+                        castq()   
+                    }
+                    if (evento.keyCode==74&&CDW==true&&castanima==true&&heroalive&&enemyalive&&!contusaoP){
+                        castw()
+                    }
+                    if(evento.keyCode==75&&CDE&&castanima&&heroalive&&enemyalive&&!contusaoP)
+                        caste()
+                    if(evento.keyCode==76&&CDR&&castanima&&heroalive&&enemyalive&&!contusaoP){
+                        castr()
+                    }
+
+
+
+                    if (evento.keyCode==37){ // esquerda
+                        Eesquerda = true
+                    }
+                    if(evento.keyCode==39){ // direita
+                        Edireita = true
+                    }
+                    if(evento.keyCode==38){ // cima
+                        Ecima = true
+                    }   
+                    if(evento.keyCode==40){ // baixo
+                        Ebaixo = true
+                    }
+
+                    if(evento.keyCode==97&&CDEQ&&enemyalive&&!contusaoE&&heroalive){
+                        Ecastq()
+                    }
+                    if(evento.keyCode==99&&CDEW&&enemyalive&&!contusaoE&&heroalive){
+                        if(!raioreturn){
+                            if(Ecastanima){
+                                Ecastw()  }
+                        }
+                        else
+                            Ecastw()
+                    }
+                    if(evento.keyCode==98&&CDEE&&Ecastanima&&enemyalive&&!contusaoE&&heroalive){
+                        Ecaste()
+                    }
+                    if(evento.keyCode==101&&CDER&&Ecastanima&&enemyalive&&!contusaoE&&heroalive){
+                        Ecastr()
+                    }
+                })
+                
+                    $('body').keyup(function(evento){
+                        if (evento.keyCode==65){
+                            esquerda = false
+                        }
+                        if(evento.keyCode==68){
+                            direita = false
+                        }
+                        if(evento.keyCode==87){
+                            cima = false
+                        }   
+                        if(evento.keyCode==83){
+                            baixo = false
+                        }
+                        if (evento.keyCode==37){ // esquerda
+                            Eesquerda = false
+                        }
+                        if(evento.keyCode==39){ // direita
+                            Edireita = false
+                        }
+                        if(evento.keyCode==38){ // cima
+                            Ecima = false
+                        }   
+                        if(evento.keyCode==40){ // baixo
+                            Ebaixo = false
+                        }
+                    })
+                    })
+
+
+
+        </script>
+    </head>
+    <body>
+    <canvas id="canvas_area" width="1067px" height="650px"></canvas>
+    <audio id="fogo">
+        <source src="skills/Fireball+1.mp3" type="audio/mp3"/>
+    </audio>
+    <audio id="rraio">
+            <source src="skills/electricshock.mp3" type="audio/mp3"/>
+        </audio>
+    <script>
+
+        var somfogo
+        somfogo = document.getElementById('fogo')
+
+        var somraio
+        somraio = document.getElementById('rraio')
+
+      //Variaveis
+        var canvas = document.getElementById("canvas_area")
+        var context = canvas.getContext("2d")
+        //var Tempo = setInterval(Desenhar,10)
+        var Lado = 3
+        var x = 255
+        var y = 125
+        var trueX = 0
+        var trueY = 150
+        var Dy = 150
+        var anterior = new Date().getTime()
+        var tempoContador = 99
+
+        //Danos contusões e mana
+
+        this.herodmg = 0
+        var heroTdmg = 0
+        var herolife = 252
+        var herotangivel = true
+
+        var mana = 0
+        var manacharge = 0
+
+        var enemyTdmg = 0
+        var enemylife = 252
+        this.enemydmg = 0
+        var Etangivel = true
+        var Emana = 0
+        var Emanacharge = 0
+
+        //Combo e Cooldown
+
+
+        //CD Combo inimigo
+        
+
+
+        //Aceleração
+        var Ace = 0
+        var AceA = 0
+        var AceM = 1.33
+        var Mov = 1
+        var MovA = 0
+        var MovM = 2.75
+        var EAce = 0
+        var EAceA = 0
+        var EAceM = 1.33
+        var EMov = 1
+        var EMovA = 0
+        var EMovM = 2.75
+        
+        //controles
+        var direita = false
+        var esquerda = false
+        var cima = false
+        var baixo = false
+            
+        // Variaveis de Animação de personagem
+        var AnimationTF = true
+        var OlharDireita = true
+        var contadordeframes = 0
+        var contusaoE = false
+        var contusaoP = false
+        var animaQ = 0
+        var AnimaEH = 0
+        var castanima = true
+        var enemyalive = true
+        var heroalive = true
+
+        
+
+        
+
+            //Balanceador de FPS
+this.limitadorfps = function (fn,fps){
+                    var antes = new Date().getTime()
+                    fps = fps || 60
+                    var intervalo = 1000 / fps
+                    return (function loop(tempo){
+                        requestAnimationFrame(loop)
+                        var agora = new Date().getTime()
+                        var diferenca = agora - antes
+                        if(diferenca > intervalo ){
+                            antes = agora - (diferenca % intervalo)
+                            fn()
+                        }
+                    }(0))
+                }        
+
+
+
+
+limitadorfps(Desenhar, 60)
+
+
+var contadordeframesACE
+
+    //Desenho
+function Desenhar(){
+            context.clearRect(0,0,canvas.width,canvas.height)
+            agora = new Date().getTime()
+            decorrido = agora - anterior
+
+            background()
+
+            boneco2()
+            boneco()
+            barradevidaP()
+            barrademanaP()
+            barradevidaE()
+            barrademanaE()
+            if(contadordeframesACE==3){
+            EAccel()
+            Accel()}
+
+            ContadoresCD()
+            ContadoresCDE()
+
+            //contador de tempo
+            context.fillStyle="#C0C0C0"
+            context.font="30px Verdana"
+            context.fillText(Math.round(tempoContador),512,45)
+            if(tempoContador>0)tempoContador -= decorrido/1000
+            else document.getElementById('loose').click()
+
+            //console.log(MovA)
+            //console.log(backgroundX)
+
+            // Contadores de frames
+            if(contadordeframes<1)
+            contadordeframes++
+            else
+            contadordeframes = 0
+
+            if(contadordeframesACE<=3)
+            contadordeframesACE++
+            else
+            contadordeframesACE = 0
+
+            anterior = agora;
+        }
+        
+
+
+    //Cenário
+    var backgroundimg = new Image()
+    var sortearfase = Math.floor((Math.random() * 2) + 1);
+    if(sortearfase==1) backgroundimg.src = "skills/Arena F.png"
+    if(sortearfase==2) backgroundimg.src = "skills/Arena.png"
+
+    var backgroundX = 0
+    var backgroundY = 0
+
+        
+function background()
+        {
+            context.drawImage(backgroundimg,0,0 , 2668, 1500 , 0,0, 1067,650)
+        }
+
+        var animaP = 0
+        var MagoFogo = new Image()
+        MagoFogo.src = "skills/fogo_walk.png"
+
+        var animaC = 0
+        var MagoFogoCast = new Image()
+        MagoFogoCast.src = "skills/fogo_cast.png"
+        
+        var contadordeframesI = 0
+        var animaI = 0
+        var MagoFogoIdle = new Image()
+        MagoFogoIdle.src = "skills/fogo_idle.png"
+
+        var animaH = 0
+        var MagoFogoHurt = new Image()
+        MagoFogoHurt.src = "skills/fogo_hurt.png"
+
+
+        var animaD = 0
+        var MagoFogoDie = new Image()
+        MagoFogoDie.src = "skills/fogo_die.png"
+
+function boneco()
+    {  
+    if(OlharDireita){
+        if(heroalive){
+            if(!contusaoP){
+                if(!castanima){
+                    context.drawImage(MagoFogoCast,0+(animaC*750),0, 750,720, x+8+trueX,y+trueY, 150,120)
+                    }
+                else{
+                    if(direita==false&&esquerda==false&&cima==false&&baixo==false){
+                        context.drawImage(MagoFogoIdle,0+(animaI*750),0, 750,720, x+trueX,y+trueY, 150,120)
+                            if(contadordeframesI<17)
+                                contadordeframesI++
+                            else
+                                contadordeframesI = 0
+                            if(contadordeframesI==17)
+                                animaI++
+                            if(animaI>1)
+                                animaI = 0
+                        }
+                    else{
+                        context.drawImage(MagoFogo,0+(animaP*750),0, 750,720, x+trueX,y+trueY, 150,120)
+                        }
+                }
+            }
+            else{
+                context.drawImage(MagoFogoHurt,0+(animaH*750), 0, 750, 720, x+trueX,y+trueY,150,120)
+                }
+        }
+        else{
+            context.drawImage(MagoFogoDie,0+(animaD*750), 0, 750, 720, x+trueX,y+trueY,150,120)
+        }
+    }
+    else{
+        if(heroalive){
+            if(!contusaoP){
+                if(!castanima){
+                        context.save()
+                        context.scale(-1,1)
+                        context.drawImage(MagoFogoCast,0+(animaC*750),0, 750,720, 0-x-155-trueX,y+trueY, 150,120)
+                        context.restore()
+                    }
+                else{
+                    if(direita==false&&esquerda==false&&cima==false&&baixo==false){
+                        context.save()
+                        context.scale(-1,1)
+                        context.drawImage(MagoFogoIdle,0+(animaI*750),0, 750,720, 0-x-150-trueX,y+trueY, 150,120)
+                        context.restore()
+                            if(contadordeframesI<17)
+                            contadordeframesI++
+                            else
+                            contadordeframesI = 0
+                            if(contadordeframesI==17)
+                            animaI++
+                            if(animaI>1)
+                            animaI = 0
+                            }
+                    else{
+                        context.save()
+                        context.scale(-1,1)
+                        context.drawImage(MagoFogo,0+(animaP*750),0, 750,720, 0-x-150-trueX,y+trueY, 150,120)
+                        context.restore()
+
+                    }
+                }
+            }
+            else{
+                context.save()
+                context.scale(-1,1)
+                context.drawImage(MagoFogoHurt,0+(animaH*750), 0, 750, 720, 0-x-150-trueX,y+trueY,150,120)
+                context.restore()
+                }
+        }
+        else{
+            context.save()
+            context.scale(-1,1)
+            context.drawImage(MagoFogoDie,0+(animaD*750), 0, 750, 720, 0-x-150-trueX,y+trueY,150,120)
+            context.restore()
+        }
+        }
+        if(direita==false&&esquerda==false&&cima==false&&baixo==false||castanima==false)
+        Ace = -0.50;
+        if(x<255){
+        x=255;
+        if(trueX>-265)
+        trueX-=MovA;
+
+        }
+        if(x>255){
+        x = 255;
+        if(trueX<674)
+        trueX+=MovA
+        }
+        if(y<125){
+        y=125;
+        if(trueY>-100)
+        trueY-=MovA
+
+        }
+        if(y>125){
+        y = 125;
+        if(trueY<384)
+        trueY+=MovA
+
+        }
+
+
+        // controles
+        if(direita == true&&castanima==true&&!contusaoP&&heroalive&&enemyalive){
+        x+=MovA
+        Lado = 3
+        OlharDireita = true
+        }
+
+        if(esquerda == true&&castanima==true&&!contusaoP&&heroalive&&enemyalive){
+        x-=MovA
+        Lado = 1
+        OlharDireita = false
+        }
+        if(cima == true&&castanima==true&&!contusaoP&&heroalive&&enemyalive){
+        y-=MovA
+        Lado = 2}
+        if(baixo == true&&castanima==true&&!contusaoP&&heroalive&&enemyalive){
+        y+=MovA
+        Lado = 4}
+        if(esquerda==true&&cima==true&&castanima==true&&!contusaoP&&heroalive)
+        Lado = 5;
+        if(esquerda==true&&baixo==true&&castanima==true&&!contusaoP&&heroalive)
+        Lado = 6;
+        if(direita==true&&cima==true&&castanima==true&&!contusaoP&&heroalive)
+        Lado = 7;
+        if(direita==true&&baixo==true&&castanima==true&&!contusaoP&&heroalive)
+        Lado = 8;
+        if(direita==true||esquerda==true||cima==true||baixo==true){
+        if(contadordeframes==1)
+        {if(AnimationTF)
+        animaP++;
+        else
+        animaP--;
+        if(animaP>=9)
+        AnimationTF = false;
+        else if(animaP<=0)
+        AnimationTF = true;
+        Ace = 0.15
+        }
+        }
+
+        if(!castanima)
+        {
+            if(contadordeframes==1)
+            {
+                animaC++
+                if(animaC>=4)
+                animaC = 4
+            }
+        }
+        else
+        animaC = 0
+
+        if(contusaoP)
+        {
+
+            if(contadordeframes==1)
+            {
+                animaH++
+                if(animaH>=4)
+                animaH = 4
+            }
+        }
+        else
+        animaH = 0
+
+        if(!heroalive)
+        {
+            if(contadordeframes==1)
+            {
+                animaD++
+                if(animaD>=9)
+                animaD = 9
+            }
+        }
+        else
+        animaD = 0
+
+            var backgroundmX = backgroundX
+            var backgroundmY = backgroundY
+            var MEx = Ex
+            var MEy = Ey 
+
+
+    }
+
+    
+
+    //Barras
+
+    
+    var barradevida = new Image()
+    barradevida.src = "skills/Barradevidafundo.png"
+    var contadordevida = new Image()
+    contadordevida.src = "skills/Barradevida.png"
+    var barrademana = new Image()
+    barrademana.src = "skills/Barrademanafundo.png"
+    var contadordemana = new Image()
+    contadordemana.src = "skills/Barrademana.png"
+
+    //Vida Jogador
+    function barradevidaP(){
+        if(this.herodmg>0){
+            heroTdmg+=5
+            this.herodmg-=5}
+        else if(heroTdmg>0){
+            heroTdmg-=5
+            herolife-=5}
+        if(herolife<=0&&enemyalive){
+                herolife = 0
+                heroalive = false
+                derrota()
+            }
+        context.drawImage(barradevida,0,0,661,91,10,10,300,45.5)
+        context.drawImage(contadordevida, 0,0,566,67,50,17.5,herolife,33.5)
+        
+    }
+
+ 
+ var contadordeframesM = 0
+
+    //Mana Jogador
+    function barrademanaP(){
+        context.drawImage(barrademana,0,0,62,317,10,60,31,158)
+        context.save()
+        context.scale(1,-1)
+        context.drawImage(contadordemana,0,0,45,258, 18, 0-212.5, 15.5, mana)
+        context.restore()
+        if(manacharge>0){
+        mana++
+        manacharge--
+        }
+        if(manacharge<0){
+        mana--
+        manacharge++
+        }
+        if(mana>125)
+        mana = 125
+        if(mana<0)
+        mana = 0
+    }
+
+    //Mana Inimigo
+    function barrademanaE(){
+        context.drawImage(barrademana,0,0,62,317,1020,60,31,158)
+        context.save()
+        context.scale(1,-1)
+        context.drawImage(contadordemana,0,0,45,258, 1028, 0-212.5, 15.5, Emana)
+        context.restore()
+        if(Emanacharge>0){
+        Emana++
+        Emanacharge--
+        }
+        if(Emanacharge<0){
+        Emana--
+        Emanacharge++
+        }
+        if(Emana>125)
+        Emana = 125
+        if(Emana<0)
+        Emana = 0
+    }
+
+    //Vida Inimigo
+    function barradevidaE(){ 
+        if(this.enemydmg>0){
+            enemyTdmg+=5
+            this.enemydmg-=5}
+        else if(enemyTdmg>0){
+            enemyTdmg-=5
+            enemylife-=5}
+        if(enemylife<=0&&heroalive){
+                enemylife = 0
+                enemyalive = false
+                vitoria()
+            }
+        context.save()
+        context.scale(-1,1)
+        context.drawImage(barradevida,0,0,661,91,0-1055,10,300,45.5)
+        context.drawImage(contadordevida, 0,0, 566,67, -1015,17.5, enemylife,33.5)
+        context.restore()
+    }
+
+
+function dano(){
+    if(!contusaoE){
+            contusaoE = true
+            Emanacharge+=18.75
+            setTimeout(() => {
+            contusaoE = false
+            AnimaEH = 0
+            }, 600)
+            }
+        }
+
+function danoP(){
+    if(!contusaoP){
+            contusaoP = true
+            manacharge+=18.75
+            setTimeout(() => {
+            contusaoP = false
+            animaH = 0
+            }, 600)
+            }
+        }
+        var contadormatch = 0
+        function derrota(){
+            contadormatch++
+            if(contadormatch>60)
+            document.getElementById('loose').click()
+        }
+
+        function vitoria(){
+            contadormatch++
+            if(contadormatch>60)
+            document.getElementById('win').click()
+        }
+
+        // Tempo de Recarga FOGO
+        
+        var CDQanima = 0
+        var contadorCDQ = new Image()
+        contadorCDQ.src = "skills/contadorCDQ.png"
+
+        var CDWanima = 0
+        var contadorCDW = new Image()
+        contadorCDW.src = "skills/contadorCDW.png"
+
+        var CDEanima = 0
+        var contadorCDE = new Image()
+        contadorCDE.src = "skills/contadorCDE.png"
+
+        var CDRanima = 0
+        var contadorCDR = new Image()
+        contadorCDR.src = "skills/contadorCDR.png"
+        
+        function ContadoresCD(){
+            context.drawImage(contadorCDQ, 0+(102*CDQanima),0, 102, 100, 10, 280, 60,60)
+            if(!CD)
+            CDQanima = 1
+            else
+            CDQanima = 0
+
+            context.drawImage(contadorCDW, 0+(102*CDWanima),0, 102, 100, 10, 350, 60,60)
+            if(!CDW)
+            CDWanima = 1
+            else
+            CDWanima = 0
+
+            context.drawImage(contadorCDE, 0+(102*CDEanima),0, 102, 100, 10, 420, 60,60)
+            if(!CDE)
+            CDEanima = 1
+            else
+            CDEanima = 0
+
+            rodasflamcontador = 7-rodasflam
+            if(!inferno){
+                if(rodasflamcontador>3)
+                rodasflamcontador = 3}
+            if(rodasflamcontador>6)
+            rodasflamcontador = 6
+
+            context.fillStyle=  "#FF4500"
+            context.font="20px Verdana"
+            context.fillText(rodasflamcontador,10,420)
+
+            context.drawImage(contadorCDR, 0+(102*CDRanima),0, 102, 100, 10, 490, 60,60)
+            if(!CDR||mana<124){
+                if(inferno)
+                    CDRanima = 2
+                else
+                    CDRanima = 1
+            }
+            else
+            CDRanima = 0
+            
+        }
+
+        // Tempo de recarga RAIO
+
+        var ECDQanima = 0
+        var contadorECDQ = new Image()
+        contadorECDQ.src = "skills/contadorECDQ.png"
+
+        var ECDWanima = 0
+        var contadorECDW = new Image()
+        contadorECDW.src = "skills/contadorECDW.png"
+
+        var ECDEanima = 0
+        var contadorECDE = new Image()
+        contadorECDE.src = "skills/contadorECDE.png"
+
+        var ECDRanima = 0
+        var contadorECDR = new Image()
+        contadorECDR.src = "skills/contadorECDR.png"
+
+        var resquicioscontador = 2
+
+        function ContadoresCDE(){
+            context.drawImage(contadorECDQ, 0+(102*ECDQanima),0, 102, 100, 1000, 280, 60,60)
+            if(!CDEQ)
+            ECDQanima = 1
+            else
+            ECDQanima = 0
+
+            context.drawImage(contadorECDW, 0+(102*ECDWanima),0, 102, 100, 1000, 350, 60,60)
+            if(!CDEW&&raioreturn)
+                ECDWanima = 3
+            else if(!CDEW)
+                ECDWanima = 2
+
+            if(CDEW&&raioreturn)
+                ECDWanima = 1
+            else if(CDEW)
+                ECDWanima = 0
+
+
+            context.drawImage(contadorECDE, 0+(102*ECDEanima),0, 102, 100, 1000, 420, 60,60)
+            if(!CDEE)
+            ECDEanima = 1
+            else
+            ECDEanima = 0
+
+            context.drawImage(contadorECDR, 0+(102*ECDRanima),0, 102, 100, 1000, 490, 60,60)
+            if(!CDER)
+            ECDRanima = 2
+            else {
+                if(dashR||dashR2)
+                ECDRanima = 1
+                else
+                    if(resquicioscontador>0&&Emana>62)
+                        ECDRanima = 0
+                    else
+                        ECDRanima = 2
+            }
+            
+            if(!resq1&&!resq2)
+            resquicioscontador = 2
+            else {
+                if(!resq1||!resq2)
+                    resquicioscontador = 1
+                else 
+                    resquicioscontador = 0
+            }
+            context.fillStyle=  "#D7DF01"
+            context.font="20px Verdana"
+            context.fillText(resquicioscontador,1045,490)
+
+
+            
+        }
+
+        </script>
+
+<a href="vitoria.html" id="win" />
+
+<a href="derrota.html" id="loose" />
+
+    </body>
+</html>

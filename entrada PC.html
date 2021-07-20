@@ -1,0 +1,133 @@
+<html>
+    <head>
+        <title>Elemental Tournament</title>
+        <meta charset="UTF-8">
+        <script src="pc/skills/jquery-3.3.1.min.js"></script>
+        <script>
+
+
+            function showCoords(event) {
+                xm = event.clientX;
+                ym = event.clientY;
+            }
+
+            $("#link").prop('enabled',true);
+
+             $(document).ready(function(){
+                    $('body').click(function controlesJq(evento){
+                        document.getElementById('link').click()
+                    })})
+
+        </script>
+    </head>
+    <body>
+
+            <div onclick="showCoords(event)" id="div1"><canvas id="canvas_area" width="812px" height="375px"></canvas></div>
+
+            <script>
+    
+            var canvas = document.getElementById("canvas_area")
+            var context = canvas.getContext("2d")
+
+            
+            menufps = function (fn,fps){
+                    var antes = new Date().getTime()
+                    fps = fps || 60
+                    var intervalo = 1000 / fps
+                    return (function loop(tempo){
+                        requestAnimationFrame(loop)
+                        var agora = new Date().getTime()
+                        var diferenca = agora - antes
+                        if(diferenca > intervalo ){
+                            antes = agora - (diferenca % intervalo)
+                            fn()
+                        }
+                    }(0))
+                } 
+
+            menufps(Desenhar,60)
+
+            var Background = new Image()
+            Background.src = "pc/imgs/historia.png"
+
+            var animaH = 0
+            var animaL = 0
+            var contadorframe = 0
+
+            var logo = new Image()
+            logo.src = "pc/imgs/logo.png"
+
+            var cordofundo = "#000000"
+
+            var voltaanima = false
+
+
+            function Desenhar(){
+            context.clearRect(0,0,canvas.width,canvas.height)
+            context.fillStyle=cordofundo
+            context.fillRect(0,0,canvas.width, canvas.height)
+            context.drawImage(Background, 0+(animaH*302), 0, 302, 302, 0, 0, 302, 302)
+            contadorframe++
+            
+            if(contadorframe>8)
+            {
+                if(!voltaanima){
+                    if(animaH<10)
+                    animaH++
+                    contadorframe = 0
+                }
+                else
+                {
+                    if(animaH>=0)
+                    animaH--
+                    if(animaH==8){
+                        cordofundo = "#262626"
+                        animaL++
+                    }
+                    if(animaH==6){
+                        cordofundo = "#4d4d4d"
+                        animaL++
+                    }
+                    if(animaH==4){
+                        cordofundo = "#737373"
+                        animaL++
+                    }
+                    if(animaH==3){
+                        cordofundo = "#999999"
+                        animaL++
+                    }
+                    if(animaH==2){
+                        cordofundo = "#bfbfbf"
+                        animaL++
+                    }
+                    if(animaH==1){
+                        cordofundo = "#d9d9d9"
+                        animaL++
+                    }
+                    if(animaH==0){
+                        cordofundo = "#ffffff"
+                        animaL++
+                    }
+                    if(animaH<=0&&animaL<10)
+                    animaL++
+
+                    contadorframe = 0
+                }
+            if(animaH==10)
+            voltaanima = true
+            }
+            context.drawImage(logo, 0+(animaL*302), 0, 302, 201, 195, 10, 432,301)
+
+        }
+
+
+            var div = document.createElement("div1")
+            div.style.width = "812px"
+            div.style.height = "375px"
+
+
+            </script>
+            <a href="pc/menu.html" id="link">
+    </body>
+    
+</html>
